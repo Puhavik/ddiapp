@@ -7,25 +7,36 @@ import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainController {
 
-    @FXML private TextField drug1Field;
-    @FXML private TextField drug2Field;
-    @FXML private TableView<DDIEntry> resultsTable;
-    @FXML private TableColumn<DDIEntry, String> drug1Col;
-    @FXML private TableColumn<DDIEntry, String> drug2Col;
-    @FXML private TableColumn<DDIEntry, String> interactionCol;
-    @FXML private TableColumn<DDIEntry, String> severityCol;
-    @FXML private TableColumn<DDIEntry, String> recommendationCol;
+    @FXML
+    private TextField drug1Field;
+    @FXML
+    private TextField drug2Field;
+    @FXML
+    private TableView<DDIEntry> resultsTable;
+    @FXML
+    private TableColumn<DDIEntry, String> drug1Col;
+    @FXML
+    private TableColumn<DDIEntry, String> drug2Col;
+    @FXML
+    private TableColumn<DDIEntry, String> effectCol;
+    @FXML
+    private TableColumn<DDIEntry, String> interactionCol;
+    @FXML
+    private TableColumn<DDIEntry, String> severityCol;
+    @FXML
+    private TableColumn<DDIEntry, String> recommendationCol;
 
     private List<DDIEntry> allEntries;
     private List<String> allDrugNames;
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
         System.out.println("[DEBUG] Initializing controller");
 
         // Setup table columns
@@ -35,6 +46,7 @@ public class MainController {
         drug1Col.setPrefWidth(150);
         drug2Col.setPrefWidth(150);
         interactionCol.setPrefWidth(200);
+        effectCol.setPrefWidth(150);
         severityCol.setPrefWidth(100);
         recommendationCol.setPrefWidth(200);
 
@@ -57,6 +69,7 @@ public class MainController {
             return new javafx.beans.property.SimpleStringProperty(value);
         });
 
+        effectCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getEffect()));
         interactionCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getInteraction()));
         severityCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getSeverity()));
         recommendationCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getRecommendation()));
@@ -111,14 +124,14 @@ public class MainController {
         if (allEntries.size() > 0) {
             DDIEntry sample = allEntries.get(0);
             System.out.println("[DEBUG] Sample entry - Drug1: '" + sample.getDrug1() + "', Drug2: '" + sample.getDrug2() + "'");
-            System.out.println("[DEBUG] Sample entry after parsing - Drug1: '" + sample.getDrug1().split("\\|")[0].trim().toLowerCase() + 
-                               "', Drug2: '" + sample.getDrug2().split("\\|")[0].trim().toLowerCase() + "'");
+            System.out.println("[DEBUG] Sample entry after parsing - Drug1: '" + sample.getDrug1().split("\\|")[0].trim().toLowerCase() +
+                    "', Drug2: '" + sample.getDrug2().split("\\|")[0].trim().toLowerCase() + "'");
         }
 
         // Print some drug names from the autocomplete list for comparison
         if (allDrugNames.size() > 0) {
-            System.out.println("[DEBUG] Sample drug names from autocomplete list: " + 
-                               allDrugNames.subList(0, Math.min(5, allDrugNames.size())));
+            System.out.println("[DEBUG] Sample drug names from autocomplete list: " +
+                    allDrugNames.subList(0, Math.min(5, allDrugNames.size())));
         }
 
         System.out.println("[DEBUG] Starting search with improved matching logic");
@@ -131,11 +144,11 @@ public class MainController {
 
                     // Try exact match first
                     boolean exactMatch = (entryDrug1.equals(drug1) && entryDrug2.equals(drug2)) ||
-                                        (entryDrug1.equals(drug2) && entryDrug2.equals(drug1));
+                            (entryDrug1.equals(drug2) && entryDrug2.equals(drug1));
 
                     if (exactMatch) {
-                        System.out.println("[DEBUG] Found exact match - Drug1: '" + entryDrug1 + 
-                                          "', Drug2: '" + entryDrug2 + "'");
+                        System.out.println("[DEBUG] Found exact match - Drug1: '" + entryDrug1 +
+                                "', Drug2: '" + entryDrug2 + "'");
                     }
 
                     return exactMatch;
@@ -159,12 +172,12 @@ public class MainController {
                         boolean drug2MatchesEntry1 = containsAllWords(entryDrug1, drug2);
                         boolean drug2MatchesEntry2 = containsAllWords(entryDrug2, drug2);
 
-                        boolean match = (drug1MatchesEntry1 && drug2MatchesEntry2) || 
-                                       (drug1MatchesEntry2 && drug2MatchesEntry1);
+                        boolean match = (drug1MatchesEntry1 && drug2MatchesEntry2) ||
+                                (drug1MatchesEntry2 && drug2MatchesEntry1);
 
                         if (match) {
-                            System.out.println("[DEBUG] Found word match - Drug1: '" + entryDrug1 + 
-                                              "', Drug2: '" + entryDrug2 + "'");
+                            System.out.println("[DEBUG] Found word match - Drug1: '" + entryDrug1 +
+                                    "', Drug2: '" + entryDrug2 + "'");
                         }
 
                         return match;
@@ -185,11 +198,11 @@ public class MainController {
                         String entryDrug2 = entry.getDrug2().split("\\|")[0].trim().toLowerCase();
 
                         boolean match = (entryDrug1.contains(drug1) && entryDrug2.contains(drug2)) ||
-                                       (entryDrug1.contains(drug2) && entryDrug2.contains(drug1));
+                                (entryDrug1.contains(drug2) && entryDrug2.contains(drug1));
 
                         if (match) {
-                            System.out.println("[DEBUG] Found substring match - Drug1: '" + entryDrug1 + 
-                                              "', Drug2: '" + entryDrug2 + "'");
+                            System.out.println("[DEBUG] Found substring match - Drug1: '" + entryDrug1 +
+                                    "', Drug2: '" + entryDrug2 + "'");
                         }
 
                         return match;
@@ -251,8 +264,8 @@ public class MainController {
     /**
      * Checks if all words in the search term are contained in the target string.
      * This provides more accurate matching than simple substring matching.
-     * 
-     * @param target The string to search in
+     *
+     * @param target     The string to search in
      * @param searchTerm The term to search for
      * @return true if all words in searchTerm are found in target
      */

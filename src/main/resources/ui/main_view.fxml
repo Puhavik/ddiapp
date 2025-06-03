@@ -17,6 +17,7 @@
                     <TableColumn fx:id="drug1Col" text="Drug 1" />
                     <TableColumn fx:id="drug2Col" text="Drug 2" />
                     <TableColumn fx:id="severityCol" text="Severity" />
+                    <TableColumn fx:id="effectCol" text="Effect" />
                     <TableColumn fx:id="interactionCol" text="Interaction" />
                     <TableColumn fx:id="recommendationCol" text="Recommendation" />
                 </columns>

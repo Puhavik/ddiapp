@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.puhavik.controller.MainController">
+    <children>
+        <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+            <HBox spacing="10">
+                <TextField fx:id="drug1Field" promptText="First drug" />
+                <TextField fx:id="drug2Field" promptText="Second drug" />
+                <Button text="Check" onAction="#onCheckInteraction"/>
+            </HBox>
+
+            <TableView fx:id="resultsTable" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="drug1Col" text="Drug 1" />
+                    <TableColumn fx:id="drug2Col" text="Drug 2" />
+                    <TableColumn fx:id="severityCol" text="Severity" />
+                    <TableColumn fx:id="interactionCol" text="Interaction" />
+                    <TableColumn fx:id="recommendationCol" text="Recommendation" />
+                </columns>
+            </TableView>
+        </VBox>
+    </children>
+</AnchorPane>

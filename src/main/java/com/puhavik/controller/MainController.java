@@ -6,6 +6,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
+import javafx.geometry.Pos;
 
 import java.io.IOException;
 import java.util.List;
@@ -73,6 +76,14 @@ public class MainController {
         interactionCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getInteraction()));
         severityCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getSeverity()));
         recommendationCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getRecommendation()));
+
+        // Configure cell factories with text wrapping
+        setupWrappingCellFactory(drug1Col);
+        setupWrappingCellFactory(drug2Col);
+        setupWrappingCellFactory(effectCol);
+        setupWrappingCellFactory(interactionCol);
+        setupWrappingCellFactory(severityCol);
+        setupWrappingCellFactory(recommendationCol);
 
         // Make sure table is visible and properly sized
         resultsTable.setVisible(true);
@@ -285,5 +296,51 @@ public class MainController {
         }
 
         return true;
+    }
+
+    /**
+     * Sets up a cell factory for a TableColumn that enables text wrapping.
+     * 
+     * @param column The TableColumn to set up with text wrapping
+     */
+    private <T> void setupWrappingCellFactory(TableColumn<DDIEntry, T> column) {
+        column.setCellFactory(tc -> {
+            TableCell<DDIEntry, T> cell = new TableCell<>() {
+                private final Label label = new Label();
+                private final VBox box = new VBox(label);
+
+                {
+                    // Configure the label for text wrapping
+                    label.setWrapText(true);
+                    label.setMaxWidth(Double.MAX_VALUE);
+
+                    // Configure the VBox container
+                    box.setAlignment(Pos.TOP_LEFT);
+                    box.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                    box.setPrefHeight(Region.USE_COMPUTED_SIZE);
+
+                    // Remove fixed minimum height to allow row to shrink to content
+                    box.setFillWidth(true);
+                }
+
+                @Override
+                protected void updateItem(T item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        label.setText(item.toString());
+                        setGraphic(box);
+
+                        // Request layout to ensure proper sizing
+                        box.requestLayout();
+                    }
+                }
+            };
+
+            return cell;
+        });
     }
 }

@@ -24,5 +24,15 @@
 }
 
 .table-column {
-    -fx-alignment: CENTER-LEFT;
+    -fx-alignment: TOP-LEFT;
+}
+
+.table-row-cell {
+    -fx-cell-size: -1;
+    -fx-padding: 2 5;
+}
+
+.table-cell {
+    -fx-padding: 2;
+    -fx-cell-size: -1;
 }

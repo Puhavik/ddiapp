@@ -5,10 +5,10 @@ public class DDIEntry {
     private final String drug2;
     private final String interaction;
     private final String effect;
-    private final String severity;
+    private final int severity;
     private final String recommendation;
 
-    public DDIEntry(String drug1, String drug2, String interaction, String effect, String severity, String recommendation) {
+    public DDIEntry(String drug1, String drug2, String interaction, String effect, int severity, String recommendation) {
         this.drug1 = drug1;
         this.drug2 = drug2;
         this.interaction = interaction;
@@ -33,7 +33,7 @@ public class DDIEntry {
         return interaction;
     }
 
-    public String getSeverity() {
+    public Integer getSeverity() {
         return severity;
     }
 

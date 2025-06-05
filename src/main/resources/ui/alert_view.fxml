@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.puhavik.controller.AlertController">
+    <children>
+        <VBox prefHeight="400.0" prefWidth="600.0">
+            <children>
+                <Text nodeOrientation="LEFT_TO_RIGHT" text="Alert" textAlignment="CENTER"
+                      wrappingWidth="599.8447265625">
+                    <font>
+                        <Font name="Arial Bold" size="21.0"/>
+                    </font>
+                </Text>
+                <HBox>
+                    <children>
+                        <Label fx:id="drug1Field" alignment="CENTER" prefHeight="17.0" prefWidth="275.0"
+                               text="First drug" textAlignment="CENTER"/>
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="49.0" text="+"
+                               textAlignment="CENTER"/>
+                        <Label fx:id="drug2Field" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0"
+                               prefWidth="277.0" text="Second drug" textAlignment="CENTER"/>
+                    </children>
+                </HBox>
+                <GridPane prefHeight="364.0" prefWidth="600.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="0.0" prefWidth="0.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="500.0" minWidth="10.0" prefWidth="500.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="0.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="68.0" minHeight="0.0" prefHeight="28.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="144.0" minHeight="10.0" prefHeight="89.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="57.0" minHeight="0.0" prefHeight="31.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="175.0" minHeight="10.0" prefHeight="133.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="131.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="124.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Label fx:id="alertLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="98.0"
+                               prefWidth="500.0" text="Label" textAlignment="CENTER" GridPane.columnIndex="1"/>
+                        <Label text="Interactions" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Label text="Recommendations" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <ListView fx:id="lvInteractions" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
+                                  GridPane.rowIndex="2"/>
+                        <ListView fx:id="lvRecommendations" prefHeight="200.0" prefWidth="200.0"
+                                  GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                            <children>
+                                <Button fx:id="btnCancelFirst" mnemonicParsing="false" prefHeight="26.0"
+                                        prefWidth="250.0" text="Cancel Drug 1"/>
+                                <Button fx:id="btnCancelSecond" prefHeight="26.0" prefWidth="250.0" text="Cancel Drug 2"
+                                        textAlignment="RIGHT"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

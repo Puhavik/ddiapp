@@ -36,3 +36,7 @@
     -fx-padding: 2;
     -fx-cell-size: -1;
 }
+
+.label-red {
+    -fx-background-color: red;
+}

@@ -4,14 +4,19 @@ import com.puhavik.model.DDIEntry;
 import com.puhavik.util.CSVLoader;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
 import javafx.geometry.Pos;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MainController {
@@ -74,7 +79,7 @@ public class MainController {
 
         effectCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getEffect()));
         interactionCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getInteraction()));
-        severityCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getSeverity()));
+        severityCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getSeverity().toString()));
         recommendationCol.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getRecommendation()));
 
         // Configure cell factories with text wrapping
@@ -117,7 +122,7 @@ public class MainController {
     }
 
     @FXML
-    public void onCheckInteraction() {
+    public void onCheckInteraction() throws IOException {
         String drug1 = drug1Field.getText().trim().toLowerCase();
         String drug2 = drug2Field.getText().trim().toLowerCase();
 
@@ -225,7 +230,7 @@ public class MainController {
         }
 
         // Update the table with results
-        resultsTable.setItems(FXCollections.observableArrayList(filtered));
+        resultsTable.setItems(FXCollections.observableArrayList(filtered.stream().sorted(Comparator.comparing(entry -> -entry.getSeverity())).toList()));
         System.out.println("[DEBUG] Table items set, count: " + resultsTable.getItems().size());
 
         // Show a message if no results were found
@@ -236,6 +241,29 @@ public class MainController {
             noResultsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
             resultsTable.setPlaceholder(noResultsLabel);
         }
+
+
+        var alertInteractions = filtered.stream().filter(item -> item.getSeverity() > 1).toList();
+
+        if (!alertInteractions.isEmpty()) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/alert_view.fxml"));
+// Create a new stage for the second scene
+            Stage stage = new Stage();
+            System.out.println("SET Scene");
+
+
+            stage.setScene(new Scene(loader.load()));
+            // Set the title for the second scene
+            stage.setTitle("Interaction Alert");
+            // Show the second scene
+
+            System.out.println("SET Controller");
+            AlertController alertController = loader.getController();
+            alertController.setAlertInteractions(alertInteractions);
+
+            stage.show();
+        }
+
     }
 
     private void setupAutoComplete(TextField field) {
@@ -300,7 +328,7 @@ public class MainController {
 
     /**
      * Sets up a cell factory for a TableColumn that enables text wrapping.
-     * 
+     *
      * @param column The TableColumn to set up with text wrapping
      */
     private <T> void setupWrappingCellFactory(TableColumn<DDIEntry, T> column) {

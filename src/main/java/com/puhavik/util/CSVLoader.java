@@ -4,15 +4,19 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.puhavik.model.DDIEntry;
+import org.apache.commons.collections.comparators.ComparatorChain;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CSVLoader {
+
+    private static final Map<String, Integer> severityOrderingMap = Map.of(
+            "None", 0, "", 0, "1", 1,
+            "2", 2, "3", 3, "Significant", 2, "Critical", 3
+    );
 
     public static List<DDIEntry> loadDDIEntries(String resourcePath) {
         List<DDIEntry> list = new ArrayList<>();
@@ -57,11 +61,19 @@ public class CSVLoader {
                     String recommendation = (String) cols[15]; // precaution
                     String severity = (String) cols[17];       // severity
 
-                    list.add(new DDIEntry(drug1, drug2, interaction, effect, severity, recommendation));
+                    list.add(new DDIEntry(drug1, drug2, interaction, effect,
+                            severityOrderingMap.getOrDefault(severity, 0), recommendation));
                 }
             }
 
             reader.close();
+
+            list.stream().filter(item -> item.getSeverity() > 1)
+                    .filter(item -> !Objects.equals(item.getInteraction(), "None") &&
+                            !Objects.equals(item.getRecommendation(), "None"))
+                    .sorted(Comparator.comparing(DDIEntry::getDrug1).thenComparing(DDIEntry::getDrug2))
+                    .forEach(item -> System.out.println(item.getDrug1() + " -- " + item.getDrug2()));
+
 
             System.out.printf("[DEBUG] Finished processing %d rows. Valid DDI entries: %d%n", count, list.size());
 

@@ -111,11 +111,7 @@ public class MainController {
 
         System.out.println("[DEBUG] Loaded entries: " + allEntries.size());
         System.out.println("[DEBUG] Unique drug names: " + allDrugNames.size());
-        if (allEntries.size() > 0) {
-            System.out.println("[DEBUG] First drug: " + allEntries.get(0).getDrug1());
-            System.out.println("[DEBUG] Second drug: " + allEntries.get(0).getDrug2());
-            System.out.println("[DEBUG] Sample interaction: " + allEntries.get(0).getInteraction());
-        }
+
 
         setupAutoComplete(drug1Field);
         setupAutoComplete(drug2Field);
@@ -136,23 +132,29 @@ public class MainController {
 
         System.out.println("[DEBUG] Total entries to search through: " + allEntries.size());
 
-        // Print some sample entries to understand the data format
-        if (allEntries.size() > 0) {
-            DDIEntry sample = allEntries.get(0);
-            System.out.println("[DEBUG] Sample entry - Drug1: '" + sample.getDrug1() + "', Drug2: '" + sample.getDrug2() + "'");
-            System.out.println("[DEBUG] Sample entry after parsing - Drug1: '" + sample.getDrug1().split("\\|")[0].trim().toLowerCase() +
-                    "', Drug2: '" + sample.getDrug2().split("\\|")[0].trim().toLowerCase() + "'");
-        }
-
-        // Print some drug names from the autocomplete list for comparison
-        if (allDrugNames.size() > 0) {
-            System.out.println("[DEBUG] Sample drug names from autocomplete list: " +
-                    allDrugNames.subList(0, Math.min(5, allDrugNames.size())));
-        }
-
         System.out.println("[DEBUG] Starting search with improved matching logic");
 
         // First try exact match
+        var filteredEntries = filterEntries(drug1, drug2);
+
+        // Update the table with results
+        resultsTable.setItems(FXCollections.observableArrayList(filteredEntries.stream().sorted(Comparator.comparing(entry -> -entry.getSeverity())).toList()));
+        System.out.println("[DEBUG] Table items set, count: " + resultsTable.getItems().size());
+
+        // Show a message if no results were found
+        if (filteredEntries.isEmpty()) {
+            System.out.println("[DEBUG] Showing no results message");
+            // Create a placeholder message for the table
+            Label noResultsLabel = new Label("No drug interactions found for " + drug1 + " and " + drug2);
+            noResultsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+            resultsTable.setPlaceholder(noResultsLabel);
+        }
+
+        openAlertWindow(filteredEntries);
+
+    }
+
+    private List<DDIEntry> filterEntries(String drug1, String drug2) {
         var filtered = allEntries.stream()
                 .filter(entry -> {
                     String entryDrug1 = entry.getDrug1().split("\\|")[0].trim().toLowerCase();
@@ -228,42 +230,27 @@ public class MainController {
 
             System.out.println("[DEBUG] Found with flexible search: " + filtered.size());
         }
+        return filtered;
+    }
 
-        // Update the table with results
-        resultsTable.setItems(FXCollections.observableArrayList(filtered.stream().sorted(Comparator.comparing(entry -> -entry.getSeverity())).toList()));
-        System.out.println("[DEBUG] Table items set, count: " + resultsTable.getItems().size());
+    private void openAlertWindow(List<DDIEntry> entriesWithInteractions) throws IOException {
 
-        // Show a message if no results were found
-        if (filtered.isEmpty()) {
-            System.out.println("[DEBUG] Showing no results message");
-            // Create a placeholder message for the table
-            Label noResultsLabel = new Label("No drug interactions found for " + drug1 + " and " + drug2);
-            noResultsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
-            resultsTable.setPlaceholder(noResultsLabel);
-        }
-
-
-        var alertInteractions = filtered.stream().filter(item -> item.getSeverity() > 1).toList();
+        var alertInteractions = entriesWithInteractions.stream().filter(item -> item.getSeverity() > 1).toList();
 
         if (!alertInteractions.isEmpty()) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/alert_view.fxml"));
-// Create a new stage for the second scene
             Stage stage = new Stage();
             System.out.println("SET Scene");
 
 
             stage.setScene(new Scene(loader.load()));
-            // Set the title for the second scene
             stage.setTitle("Interaction Alert");
-            // Show the second scene
 
-            System.out.println("SET Controller");
             AlertController alertController = loader.getController();
             alertController.setAlertInteractions(alertInteractions);
 
             stage.show();
         }
-
     }
 
     private void setupAutoComplete(TextField field) {
@@ -277,7 +264,7 @@ public class MainController {
             var matched = allDrugNames.stream()
                     .filter(name -> name.contains(newVal.toLowerCase()))
                     .limit(5)
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (matched.isEmpty()) {
                 suggestions.hide();

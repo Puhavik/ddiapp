@@ -21,7 +21,6 @@ public class CSVLoader {
     public static List<DDIEntry> loadDDIEntries(String resourcePath) {
         List<DDIEntry> list = new ArrayList<>();
 
-
         System.out.println("[DEBUG] Loading CSV from resource path: " + resourcePath);
 
         try {
@@ -68,13 +67,6 @@ public class CSVLoader {
 
             reader.close();
 
-            list.stream().filter(item -> item.getSeverity() > 1)
-                    .filter(item -> !Objects.equals(item.getInteraction(), "None") &&
-                            !Objects.equals(item.getRecommendation(), "None"))
-                    .sorted(Comparator.comparing(DDIEntry::getDrug1).thenComparing(DDIEntry::getDrug2))
-                    .forEach(item -> System.out.println(item.getDrug1() + " -- " + item.getDrug2()));
-
-
             System.out.printf("[DEBUG] Finished processing %d rows. Valid DDI entries: %d%n", count, list.size());
 
         } catch (Exception e) {
@@ -85,7 +77,4 @@ public class CSVLoader {
         return list.stream().distinct().collect(Collectors.toList());
     }
 
-    private static String safeGet(String[] line, int index) {
-        return (index < line.length) ? line[index].trim() : "";
-    }
 }
